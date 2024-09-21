@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مجموعه بازی‌ها</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        h1 {
+            margin-bottom: 40px;
+        }
+        .button {
+            display: block;
+            width: 200px;
+            padding: 15px;
+            margin: 20px;
+            text-align: center;
+            background-color: #333;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 18px;
+        }
+        .button:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+    <h1>مجموعه بازی‌ها</h1>
+    <a href="#drawing-game" class="button">شروع بازی نقاشی</a>
+    <a href="#math-game" class="button">شروع بازی حدس ریاضی</a>
+    <a href="#karate-game" class="button">شروع بازی Karate Kid</a>
+
+    <div id="drawing-game" style="display:none;">
+        <h2>بازی نقاشی</h2>
+        <canvas id="chalkboard"></canvas>
+        <div class="palette">
+            <div class="color" style="background-color: red;" onclick="selectColor('red')"></div>
+            <div class="color" style="background-color: blue;" onclick="selectColor('blue')"></div>
+            <div class="color" style="background-color: green;" onclick="selectColor('green')"></div>
+            <div class="color" style="background-color: yellow;" onclick="selectColor('yellow')"></div>
+            <div class="color" style="background-color: black;" onclick="selectColor('black')"></div>
+            <div class="color" style="background-color: white;" onclick="selectColor('white')"></div>
+        </div>
+
+        <script>
+            const canvas = document.getElementById('chalkboard');
+            const ctx = canvas.getContext('2d');
+            let drawing = false;
+            let currentColor = 'black';
+
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight * 0.8;
+
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mousemove', draw);
+
+            function selectColor(color) {
+                currentColor = color;
+            }
+
+            function startDrawing(e) {
+                drawing = true;
+                draw(e);
+            }
+
+            function stopDrawing() {
+                drawing = false;
+                ctx.beginPath();
+            }
+
+            function draw(e) {
+                if (!drawing) return;
+                ctx.lineWidth = 5;
+                ctx.lineCap = 'round';
+                ctx.strokeStyle = currentColor;
+
+                ctx.lineTo(e.clientX, e.clientY);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(e.clientX, e.clientY);
+            }
+        </script>
+    </div>
+
+    <div id="math-game" style="display:none;">
+        <h2>بازی حدس ریاضی</h2>
+        <div class="question" id="question"></div>
+        <div class="options">
+            <button onclick="checkAnswer(0)">گزینه 1</button>
+            <button onclick="checkAnswer(1)">گزینه 2</button>
+            <button onclick="checkAnswer(2)">گزینه 3</button>
+        </div>
+
+        <script>
+            let correctAnswer = 0;
+
+            function generateQuestion() {
+                const num1 = Math.floor(Math.random() * 10) + 1;
+                const num2 = Math.floor(Math.random() * 10) + 1;
+                const operations = ['+', '-', '*', '/'];
+                const operation = operations[Math.floor(Math.random() * operations.length)];
+                let questionText;
+                let answer;
+
+                switch (operation) {
+                    case '+':
+                        answer = num1 + num2;
+                        questionText = `${num1} + ${num2}`;
+                        break;
+                    case '-':
+                        answer = num1 - num2;
+                        questionText = `${num1} - ${num2}`;
+                        break;
+                    case '*':
+                        answer = num1 * num2;
+                        questionText = `${num1} * ${num2}`;
+                        break;
+                    case '/':
+                        answer = Math.floor(num1 / num2);
+                        questionText = `${num1} / ${num2}`;
+                        break;
+                }
+
+                correctAnswer = answer;
+                document.getElementById('question').innerText = `سوال: ${questionText}`;
+                setOptions(answer);
+            }
+
+            function setOptions(correctAnswer) {
+                const options = [correctAnswer, correctAnswer + Math.floor(Math.random() * 10) + 1, correctAnswer - Math.floor(Math.random() * 10) + 1];
+                options.sort(() => Math.random() - 0.5);
+
+                const buttons = document.querySelectorAll('.options button');
+                buttons.forEach((button, index) => {
+                    button.innerText = options[index];
+                });
+            }
+
+            function checkAnswer(selectedIndex) {
+                const buttons = document.querySelectorAll('.options button');
+                const selectedAnswer = parseInt(buttons[selectedIndex].innerText);
+
+                if (selectedAnswer === correctAnswer) {
+                    alert('تبریک! پاسخ درست است.');
+                } else {
+                    alert('اشتباه است! دوباره امتحان کنید.');
+                }
+
+                generateQuestion();
+            }
+
+            generateQuestion();
+        </script>
+    </div>
+
+    <div id="karate-game" style="display:none;">
+        <h2>بازی Karate Kid</h2>
+        <div class="score">امتیاز: <span id="score">0</span></div>
+        <img id="tree" src="https://example.com/tree.png" alt="Tree" />
+
+        <script>
+            let score = 0;
+            const scoreDisplay = document.getElementById('score');
+            const tree = document.getElementById('tree');
+
+            tree.addEventListener('click', function() {
+                score++;
+                scoreDisplay.innerText = score;
+                tree.style.transform = 'scale(0.9)';
+                setTimeout(() => {
+                    tree.style.transform = 'scale(1)';
+                }, 100);
+            });
+        </script>
+    </div>
+
+    <script>
+        document.querySelectorAll('.button').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('div[id$="-game"]').forEach(game => game.style.display = 'none');
+                const gameId = this.getAttribute('href').substring(1);
+                document.getElementById(gameId).style.display = 'block';
+            });
+        });
+    </script>
+</body>
+</html>
